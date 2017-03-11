@@ -5,7 +5,7 @@
 #include <string>
 
 #include "SDL2/SDL.h"
-#include "SDL_test_common.h"
+#include "SDL2/SDL_test_common.h"
 
 #if defined(__IPHONEOS__) || defined(__ANDROID__)
 #define HAVE_OPENGLES
@@ -16,11 +16,47 @@
 #ifdef HAVE_OPENGLES
 #include "SDL_opengles.h"
 #else
-#include "SDL_opengl.h"
+#include "SDL2/SDL_opengl.h"
 #endif
 
-//Now for some ugly file-scoping.
-//C++, Y U no proper statics?
+int main(int argc, char* argv[])
+{
+	SDL_Window* window = NULL;
 
-static SDLTest_CommonState* state;
-static SDL_GLContext* context = NULL;
+	SDL_Surface* screenSurface = NULL;
+
+	if(SDL_Init(SDL_INIT_VIDEO) < 0)
+	{
+		std::cerr << "Error initializing SDL: " << SDL_GetError() << std::endl;
+	}
+	else
+	{
+		window = SDL_CreateWindow("SDL Test", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, SDL_WINDOW_SHOWN);
+		if(window == NULL)
+		{
+			std::cerr << "Error initializing window: " << SDL_GetError() << std::endl;
+		}
+		else
+		{	
+			SDL_Rect subRect;
+			subRect.x = 120;
+			subRect.y = 140;
+			subRect.h = 100;
+			subRect.w = 100;
+			screenSurface = SDL_GetWindowSurface(window);
+			SDL_FillRect(screenSurface, NULL, SDL_MapRGB(screenSurface->format, 0xFF, 0xFF, 0xFF));
+			SDL_UpdateWindowSurface(window);
+			SDL_Delay(2000);
+			SDL_FillRect(screenSurface, &subRect, SDL_MapRGB(screenSurface->format, 0xFF, 0, 0));
+			SDL_UpdateWindowSurface(window);
+			SDL_Delay(1000);
+		}
+
+	}
+	SDL_DestroyWindow(window);
+	SDL_Quit();
+	
+	
+	
+	return 0;
+}
