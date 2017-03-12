@@ -46,16 +46,25 @@ int main(int argc, char* argv[])
 
 	while((green + blue) <= 0xFF)
 	{
+		SDL_FillRect(screenSurface, NULL, SDL_MapRGB(screenSurface->format, 0xFF, 0xFF, 0xFF));
 		SDL_FillRect(screenSurface, &subRect, SDL_MapRGB(screenSurface->format, red, green, blue));
 		SDL_UpdateWindowSurface(window);
+		
+		//Change the color of the square.
 		red--;
 		green++;
 		blue++;
+		
+		//Change the position of the square.
+		subRect.x += 2;
+		subRect.y += 1;
+		
+		
 		SDL_Delay(17);
 
 	}
 	
-	
+	SDL_Delay(2000);
 
 	shutdown(window);
 	window = NULL;
