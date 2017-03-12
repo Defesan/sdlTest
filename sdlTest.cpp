@@ -19,44 +19,61 @@
 #include "SDL2/SDL_opengl.h"
 #endif
 
+bool init(SDL_Window** win, SDL_Surface** surface);
+
 int main(int argc, char* argv[])
 {
 	SDL_Window* window = NULL;
 
 	SDL_Surface* screenSurface = NULL;
 
-	if(SDL_Init(SDL_INIT_VIDEO) < 0)
+	if(init(&window, &screenSurface))
 	{
-		std::cerr << "Error initializing SDL: " << SDL_GetError() << std::endl;
+		SDL_Rect subRect;
+		subRect.x = 120;
+		subRect.y = 140;
+		subRect.h = 100;
+		subRect.w = 100;
+		SDL_FillRect(screenSurface, NULL, SDL_MapRGB(screenSurface->format, 0xFF, 0xFF, 0xFF));
+		SDL_UpdateWindowSurface(window);
+		SDL_Delay(2000);
+		SDL_FillRect(screenSurface, &subRect, SDL_MapRGB(screenSurface->format, 0xFF, 0, 0));
+		SDL_UpdateWindowSurface(window);
+		SDL_Delay(1000);
 	}
-	else
-	{
-		window = SDL_CreateWindow("SDL Test", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, SDL_WINDOW_SHOWN);
-		if(window == NULL)
-		{
-			std::cerr << "Error initializing window: " << SDL_GetError() << std::endl;
-		}
-		else
-		{	
-			SDL_Rect subRect;
-			subRect.x = 120;
-			subRect.y = 140;
-			subRect.h = 100;
-			subRect.w = 100;
-			screenSurface = SDL_GetWindowSurface(window);
-			SDL_FillRect(screenSurface, NULL, SDL_MapRGB(screenSurface->format, 0xFF, 0xFF, 0xFF));
-			SDL_UpdateWindowSurface(window);
-			SDL_Delay(2000);
-			SDL_FillRect(screenSurface, &subRect, SDL_MapRGB(screenSurface->format, 0xFF, 0, 0));
-			SDL_UpdateWindowSurface(window);
-			SDL_Delay(1000);
-		}
+	
+	
 
-	}
 	SDL_DestroyWindow(window);
 	SDL_Quit();
 	
 	
 	
 	return 0;
+}
+
+//Yes, yes. This is a terrible way to do this. It actually felt....naughty. Unbelievably, it actually works. Good god, WHY?
+bool init(SDL_Window** win, SDL_Surface** surface)
+{
+	bool success = true;
+	
+	if(SDL_Init(SDL_INIT_VIDEO) < 0)
+	{
+		std::cerr << "Error initializing SDL: " << SDL_GetError() << std::endl;
+		success = false;
+	}
+	else
+	{
+		*win = SDL_CreateWindow("Init Test", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, SDL_WINDOW_SHOWN);
+		if(win == NULL)
+		{
+			std::cerr << "Error initializing window: " << SDL_GetError() << std::endl;
+			success = false;
+		}
+		else
+		{
+			*surface = SDL_GetWindowSurface(*win);
+		}
+	}
+	return success;
 }
