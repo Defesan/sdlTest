@@ -20,7 +20,7 @@
 #endif
 
 bool init(SDL_Window** win, SDL_Surface** surface);
-void shutdown(SDL_Window* win, SDL_Surface* surface);
+void shutdown(SDL_Window* win);
 
 int main(int argc, char* argv[])
 {
@@ -34,16 +34,27 @@ int main(int argc, char* argv[])
 	}
 	
 	SDL_Rect subRect;
+	Uint8 red = 0xFF;
+	Uint8 green = 0x00;
+	Uint8 blue = 0x00;
 	subRect.x = 120;
 	subRect.y = 140;
 	subRect.h = 100;
 	subRect.w = 100;
 	SDL_FillRect(screenSurface, NULL, SDL_MapRGB(screenSurface->format, 0xFF, 0xFF, 0xFF));
 	SDL_UpdateWindowSurface(window);
-	SDL_Delay(2000);
-	SDL_FillRect(screenSurface, &subRect, SDL_MapRGB(screenSurface->format, 0xFF, 0, 0));
-	SDL_UpdateWindowSurface(window);
-	SDL_Delay(1000);
+
+	while((green + blue) <= 0xFF)
+	{
+		SDL_FillRect(screenSurface, &subRect, SDL_MapRGB(screenSurface->format, red, green, blue));
+		SDL_UpdateWindowSurface(window);
+		red--;
+		green++;
+		blue++;
+		SDL_Delay(17);
+
+	}
+	
 	
 
 	shutdown(window);
