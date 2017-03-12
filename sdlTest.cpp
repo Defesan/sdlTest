@@ -20,6 +20,7 @@
 #endif
 
 bool init(SDL_Window** win, SDL_Surface** surface);
+void shutdown(SDL_Window* win, SDL_Surface* surface);
 
 int main(int argc, char* argv[])
 {
@@ -27,32 +28,34 @@ int main(int argc, char* argv[])
 
 	SDL_Surface* screenSurface = NULL;
 
-	if(init(&window, &screenSurface))
+	if(!init(&window, &screenSurface))
 	{
-		SDL_Rect subRect;
-		subRect.x = 120;
-		subRect.y = 140;
-		subRect.h = 100;
-		subRect.w = 100;
-		SDL_FillRect(screenSurface, NULL, SDL_MapRGB(screenSurface->format, 0xFF, 0xFF, 0xFF));
-		SDL_UpdateWindowSurface(window);
-		SDL_Delay(2000);
-		SDL_FillRect(screenSurface, &subRect, SDL_MapRGB(screenSurface->format, 0xFF, 0, 0));
-		SDL_UpdateWindowSurface(window);
-		SDL_Delay(1000);
+		return 1;	
 	}
 	
+	SDL_Rect subRect;
+	subRect.x = 120;
+	subRect.y = 140;
+	subRect.h = 100;
+	subRect.w = 100;
+	SDL_FillRect(screenSurface, NULL, SDL_MapRGB(screenSurface->format, 0xFF, 0xFF, 0xFF));
+	SDL_UpdateWindowSurface(window);
+	SDL_Delay(2000);
+	SDL_FillRect(screenSurface, &subRect, SDL_MapRGB(screenSurface->format, 0xFF, 0, 0));
+	SDL_UpdateWindowSurface(window);
+	SDL_Delay(1000);
 	
 
-	SDL_DestroyWindow(window);
-	SDL_Quit();
-	
+	shutdown(window);
+	window = NULL;
 	
 	
 	return 0;
 }
 
-//Yes, yes. This is a terrible way to do this. It actually felt....naughty. Unbelievably, it actually works. Good god, WHY?
+//I know, it's ugly. But technically, I'm just passing a pointer to a memory location that will hold a pointer to an object.
+//Now that I've got a better grip on what's going on, I realize that this is actually not the worst way to do this, if you 
+//want to initialize objects outside of the function they're declared in. Or, in fact, to change what they point to.
 bool init(SDL_Window** win, SDL_Surface** surface)
 {
 	bool success = true;
@@ -76,4 +79,13 @@ bool init(SDL_Window** win, SDL_Surface** surface)
 		}
 	}
 	return success;
+}
+
+
+//In this case, however, we aren't modifying the pointers, just the objects.
+void shutdown(SDL_Window* win)
+{
+	SDL_DestroyWindow(win);
+	SDL_Quit();
+
 }
